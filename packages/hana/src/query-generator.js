@@ -10,6 +10,7 @@ import {
 import { BaseSqlExpression } from '@sequelize/core/_non-semver-use-at-your-own-risk_/expression-builders/base-sql-expression.js';
 import { rejectInvalidOptions } from '@sequelize/core/_non-semver-use-at-your-own-risk_/utils/check.js';
 import { joinSQLFragments } from '@sequelize/core/_non-semver-use-at-your-own-risk_/utils/join-sql-fragments.js';
+import { createBindParamGenerator } from '@sequelize/core/_non-semver-use-at-your-own-risk_/utils/sql.js';
 
 import { defaultValueSchemable } from '@sequelize/core/_non-semver-use-at-your-own-risk_/utils/query-builder-utils.js';
 import each from 'lodash/each';
@@ -325,7 +326,7 @@ export class HanaQueryGenerator extends HanaQueryGeneratorTypeScript {
           const bind = Object.create(null);
           const dummyOption = {
             type: options?.type,
-            bindParam: this.bindParam(bind),
+            bindParam: createBindParamGenerator(bind),
           };
           const dummyEscaped = this.escape(value, dummyOption);
           const valueStringHasDollarSequelizeParameter = Object.keys(bind).length > 0;

@@ -413,6 +413,10 @@ export class HanaQueryGeneratorTypeScript extends AbstractQueryGenerator {
     return `json_unquote(${this.escape(arg, options)})`;
   }
 
+  getRandomFloatFunctionCall(): string {
+    return 'RAND()';
+  }
+
   versionQuery() {
     return `SELECT "VALUE" AS "version" FROM SYS.M_SYSTEM_OVERVIEW WHERE "SECTION" = 'System' AND "NAME" = 'Version'`;
   }
