@@ -176,15 +176,8 @@ describe('AsyncLocalStorage (ContinuationLocalStorage) Transactions (CLS)', () =
 
   it('promises returned by sequelize.query are correctly patched', async () => {
     await vars.clsSequelize.transaction(async t => {
-      await vars.clsSequelize.query(`select 1${}`, {
-        type: QueryTypes.SELECT,
-      });
       await vars.clsSequelize.query(
-        `select 1 ${getTestDialect() === 'oracle'
-          ? 'FROM DUAL'
-          : dialectName === 'hana'
-            ? 'FROM DUMMY'
-            : ''}`,
+        `select 1 ${getTestDialect() === 'oracle' ? 'FROM DUAL' : dialectName === 'hana' ? 'FROM DUMMY' : ''}`,
         { type: QueryTypes.SELECT },
       );
 
