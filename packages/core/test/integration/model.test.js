@@ -286,6 +286,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
         }
 
         case 'db2':
+        case 'oracle':
         case 'mssql': {
           expect(index.fields).to.deep.equal([
             { attribute: 'user_name', collate: undefined, length: undefined, order: 'ASC' },
@@ -554,6 +555,27 @@ describe(Support.getTestDialectTeaser('Model'), () => {
 
           expect(idx2.fields).to.deep.equal([
             { attribute: 'fieldC', length: undefined, order: undefined },
+          ]);
+
+          break;
+        }
+
+        case 'oracle': {
+          idx1 = args[1];
+          idx2 = args[2];
+          idx3 = args[3];
+
+          expect(idx1.fields).to.deep.equal([
+            { attribute: 'fieldB', length: undefined, order: 'ASC', collate: undefined },
+            { attribute: 'fieldA', length: undefined, order: 'ASC', collate: undefined },
+          ]);
+
+          expect(idx2.fields).to.deep.equal([
+            { attribute: 'fieldC', length: undefined, order: 'ASC', collate: undefined },
+          ]);
+
+          expect(idx3.fields).to.deep.equal([
+            { attribute: 'fieldD', length: undefined, order: 'ASC', collate: undefined },
           ]);
 
           break;
@@ -1051,7 +1073,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
             if (dialectName === 'sqlite3' && sql.includes('TABLE_INFO')) {
               test++;
               expect(sql).to.not.contain('special');
-            } else if (['mysql', 'mssql', 'mariadb', 'db2', 'ibmi', 'hana'].includes(dialectName)) {
+            } else if (dialectName !== 'postgres') {
               test++;
               expect(sql).to.not.contain('special');
             }
@@ -1070,9 +1092,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
               if (dialectName === 'sqlite3' && sql.includes('TABLE_INFO')) {
                 test++;
                 expect(sql).to.contain('special');
-              } else if (
-                ['mysql', 'mssql', 'mariadb', 'db2', 'ibmi', 'hana'].includes(dialectName)
-              ) {
+              } else if (dialectName !== 'postgres') {
                 test++;
                 expect(sql).to.contain('special');
               }
@@ -1122,6 +1142,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
                 case 'postgres':
                 case 'db2':
                 case 'ibmi':
+                case 'oracle':
                 case 'hana': {
                   expect(sql).to.match(/REFERENCES\s+"prefix"\."UserPubs" \("id"\)/);
 
@@ -1170,6 +1191,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
                 case 'postgres':
                 case 'db2':
                 case 'ibmi':
+                case 'oracle':
                 case 'hana': {
                   expect(UserPublic).to.include('INSERT INTO "UserPublics"');
 
@@ -1203,6 +1225,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
                 case 'postgres':
                 case 'db2':
                 case 'ibmi':
+                case 'oracle':
                 case 'hana': {
                   expect(UserSpecial).to.include('INSERT INTO "special"."UserSpecials"');
 
@@ -1242,6 +1265,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
                 case 'postgres':
                 case 'db2':
                 case 'ibmi':
+                case 'oracle':
                 case 'hana': {
                   expect(user).to.include('UPDATE "special"."UserSpecials"');
 
@@ -1436,6 +1460,12 @@ describe(Support.getTestDialectTeaser('Model'), () => {
 
           case 'db2': {
             expect(error.message).to.match(/ is an undefined name/);
+
+            break;
+          }
+
+          case 'oracle': {
+            expect(error.message).to.match(/^ORA-00942:/);
 
             break;
           }

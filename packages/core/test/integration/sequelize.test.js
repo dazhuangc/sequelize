@@ -21,7 +21,7 @@ const { CONFIG } = require('../config/config');
 const dialect = getTestDialect();
 
 const qq = str => {
-  if (['postgres', 'mssql', 'db2', 'ibmi', 'hana'].includes(dialect)) {
+  if (['postgres', 'mssql', 'db2', 'ibmi', 'oracle', 'hana'].includes(dialect)) {
     return `"${str}"`;
   }
 
@@ -61,6 +61,9 @@ const badUsernameConfig = {
   snowflake: {
     account: 'bad_account',
   },
+  oracle: {
+    username: 'bad_user',
+  },
   hana: {
     user: 'bad_user',
   },
@@ -95,6 +98,9 @@ const noPasswordConfig = {
   snowflake: {
     password: null,
   },
+  oracle: {
+    password: null,
+  },
   hana: {
     password: null,
   },
@@ -122,6 +128,9 @@ const badAddressConfig = {
   },
   ibmi: {
     system: 'bad-address',
+  },
+  oracle: {
+    port: 9999,
   },
   hana: {
     host: 'bad-address',
@@ -187,7 +196,6 @@ describe(getTestDialectTeaser('Sequelize'), () => {
         if (dialect !== 'db2') {
           it('triggers the error event when using replication', async () => {
             const sequelize = createSequelizeInstance({
-              dialect,
               replication: {
                 read: [badUsernameConfig[dialect]],
               },
@@ -390,6 +398,12 @@ describe(getTestDialectTeaser('Sequelize'), () => {
 
             case 'db2': {
               expect(error.message).to.include('A communication error has been detected');
+
+              break;
+            }
+
+            case 'oracle': {
+              expect(error.message).to.include('NJS-007');
 
               break;
             }

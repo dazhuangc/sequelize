@@ -12,6 +12,7 @@ describe('QueryGenerator#commitTransactionQuery', () => {
     expectsql(() => queryGenerator.commitTransactionQuery(), {
       default: 'COMMIT',
       'db2 ibmi mssql hana': notSupportedError,
+      oracle: 'COMMIT TRANSACTION',
     });
   });
 });

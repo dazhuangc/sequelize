@@ -33,6 +33,18 @@ describe('QueryInterface#listTables', () => {
               throw error;
             }
           }
+        } else if (dialectName === 'oracle') {
+          const plsql = [
+            'BEGIN',
+            'EXECUTE IMMEDIATE',
+            "'DROP VIEW V_Fail';",
+            'EXCEPTION WHEN OTHERS THEN',
+            '  IF SQLCODE != -942 THEN',
+            '    RAISE;',
+            '  END IF;',
+            'END;',
+          ].join(' ');
+          await sequelize.query(plsql);
         } else if (dialectName === 'hana') {
           // HANA does not support DROP VIEW IF EXISTS
           const sql = [
@@ -51,14 +63,21 @@ describe('QueryInterface#listTables', () => {
         }
       }
 
+      const fromQuery = () => {
+        if (['db2', 'ibmi'].includes(dialectName)) {
+          return 'FROM SYSIBM.SYSDUMMY1';
+        } else if (dialectName === 'oracle') {
+          return 'FROM DUAL';
+        } else if (dialectName === 'hana') {
+          return 'FROM DUMMY';
+        }
+
+        return '';
+      };
+
       await queryInterface.createTable('my_test_table', { name: DataTypes.STRING });
       await cleanup();
-      const fromClause = ['db2', 'ibmi'].includes(dialectName)
-        ? ' FROM SYSIBM.SYSDUMMY1'
-        : dialectName === 'hana'
-          ? ' FROM DUMMY'
-          : '';
-      const sql = `CREATE VIEW V_Fail AS SELECT 1 Id${fromClause};`;
+      const sql = `CREATE VIEW V_Fail AS SELECT 1 Id ${fromQuery()};`;
       await sequelize.queryRaw(sql);
       const allTables = await queryInterface.listTables();
       const tableNames = allTables.map(v => v.tableName);

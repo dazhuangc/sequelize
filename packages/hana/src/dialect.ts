@@ -53,6 +53,9 @@ export class HanaDialect extends AbstractDialect<HanaDialectOptions, HanaConnect
       type: true,
       using: false,
     },
+    inserts: {
+      ignoreDuplicates: false,
+    },
     dataTypes: {
       DECIMAL: { unconstrained: true },
       JSON: true,
@@ -60,6 +63,7 @@ export class HanaDialect extends AbstractDialect<HanaDialectOptions, HanaConnect
         precision: false,
       },
     },
+    select: { dummyTable: 'DUMMY' },
     dropTable: {
       cascade: true,
     },

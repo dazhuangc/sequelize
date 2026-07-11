@@ -39,13 +39,11 @@ describe('QueryGenerator#removeConstraintQuery', () => {
     expectsql(
       () => queryGenerator.removeConstraintQuery('myTable', 'myConstraint', { ifExists: true }),
       {
-        default: 'ALTER TABLE [myTable] DROP CONSTRAINT IF EXISTS [myConstraint]',
+        default: buildInvalidOptionReceivedError('removeConstraintQuery', dialect.name, [
+          'ifExists',
+        ]),
+        'postgres mariadb mssql': 'ALTER TABLE [myTable] DROP CONSTRAINT IF EXISTS [myConstraint]',
         sqlite3: notSupportedError,
-        'db2 ibmi mysql snowflake': buildInvalidOptionReceivedError(
-          'removeConstraintQuery',
-          dialect.name,
-          ['ifExists'],
-        ),
         hana: hanaIfExistsWrapper(
           'ALTER TABLE "myTable" DROP CONSTRAINT "myConstraint"',
           'myConstraint',

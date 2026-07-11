@@ -17,6 +17,7 @@ describe('DataTypes.BLOB', () => {
     db2: 'BLOB(255)',
     postgres: 'BYTEA',
     sqlite3: 'BLOB',
+    oracle: 'BLOB',
     hana: 'BLOB',
   });
 
@@ -27,6 +28,7 @@ describe('DataTypes.BLOB', () => {
     db2: 'BLOB(16M)',
     postgres: 'BYTEA',
     sqlite3: 'BLOB',
+    oracle: 'BLOB',
     hana: 'BLOB',
   });
 
@@ -37,6 +39,7 @@ describe('DataTypes.BLOB', () => {
     db2: 'BLOB(16M)',
     postgres: 'BYTEA',
     sqlite3: 'BLOB',
+    oracle: 'BLOB',
     hana: 'BLOB',
   });
 
@@ -47,6 +50,7 @@ describe('DataTypes.BLOB', () => {
     db2: 'BLOB(2G)',
     postgres: 'BYTEA',
     sqlite3: 'BLOB',
+    oracle: 'BLOB',
     hana: 'BLOB',
   });
 

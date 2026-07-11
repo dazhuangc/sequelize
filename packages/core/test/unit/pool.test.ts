@@ -132,6 +132,9 @@ describe('sequelize.pool', () => {
         snowflake: {
           account: 'replica1',
         },
+        oracle: {
+          host: 'replica1',
+        },
         hana: {
           host: 'replica1',
         },
@@ -161,6 +164,9 @@ describe('sequelize.pool', () => {
         },
         snowflake: {
           account: 'replica2',
+        },
+        oracle: {
+          host: 'replica2',
         },
         hana: {
           host: 'replica2',
@@ -235,6 +241,9 @@ describe('sequelize.pool', () => {
         },
         snowflake: {
           account: 'write',
+        },
+        oracle: {
+          host: 'write',
         },
         hana: {
           host: 'write',

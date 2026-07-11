@@ -509,7 +509,7 @@ describe(Support.getTestDialectTeaser('Model'), () => {
       }
 
       it('should not fail silently with concurrency higher than pool, a unique constraint and a create hook resulting in mismatched values', async function () {
-        if (['sqlite3', 'mssql', 'db2', 'ibmi', 'hana'].includes(dialectName)) {
+        if (['sqlite3', 'mssql', 'db2', 'ibmi', 'oracle', 'hana'].includes(dialectName)) {
           return;
         }
 
@@ -932,9 +932,11 @@ describe(Support.getTestDialectTeaser('Model'), () => {
             ? '$sequelize_1'
             : dialectName === 'mssql'
               ? '@sequelize_1'
-              : dialectName === 'hana'
-                ? ':intVal'
-                : '?';
+              : dialectName === 'oracle'
+                ? ':1'
+                : dialectName === 'hana'
+                  ? ':intVal'
+                  : '?';
       let match = false;
 
       const user = await this.User.create(

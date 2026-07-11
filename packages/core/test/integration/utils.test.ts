@@ -35,7 +35,7 @@ describe(getTestDialectTeaser('fn()'), () => {
 
   // some dialects return the result of arithmetic functions (SUM, COUNT) as integer & floats, others as bigints & decimals.
   const arithmeticAsNumber = dialectName === 'sqlite3' || dialectName === 'db2';
-  if (dialectName !== 'mssql' && dialectName !== 'ibmi' && dialectName !== 'hana') {
+  if (!['mssql', 'ibmi', 'oracle', 'hana'].includes(dialectName)) {
     it('accepts condition object (with cast)', async () => {
       const type = dialectName === 'mysql' ? 'unsigned' : 'int';
 
@@ -82,12 +82,7 @@ describe(getTestDialectTeaser('fn()'), () => {
     });
   }
 
-  if (
-    dialectName !== 'mssql' &&
-    dialectName !== 'postgres' &&
-    dialectName !== 'ibmi' &&
-    dialectName !== 'hana'
-  ) {
+  if (!['mssql', 'postgres', 'ibmi', 'oracle', 'hana'].includes(dialectName)) {
     it('accepts condition object (auto casting)', async () => {
       const [airplane] = await vars.Airplane.findAll({
         attributes: [

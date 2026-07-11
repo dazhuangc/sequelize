@@ -13,6 +13,7 @@ describe('QueryGenerator#dropSchemaQuery', () => {
       default: 'DROP SCHEMA [mySchema]',
       db2: 'DROP SCHEMA "mySchema" RESTRICT',
       sqlite3: notSupportedError,
+      oracle: `BEGIN EXECUTE IMMEDIATE 'DROP USER "mySchema" CASCADE' ; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -1918 THEN RAISE; END IF; END;`,
     });
   });
 
@@ -23,6 +24,7 @@ describe('QueryGenerator#dropSchemaQuery', () => {
         'ifExists',
       ]),
       sqlite3: notSupportedError,
+      oracle: `BEGIN EXECUTE IMMEDIATE 'DROP USER "mySchema" CASCADE' ; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -1918 THEN RAISE; END IF; END;`,
     });
   });
 
@@ -33,6 +35,7 @@ describe('QueryGenerator#dropSchemaQuery', () => {
         'cascade',
       ]),
       sqlite3: notSupportedError,
+      oracle: `BEGIN EXECUTE IMMEDIATE 'DROP USER "mySchema" CASCADE' ; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -1918 THEN RAISE; END IF; END;`,
     });
   });
 
@@ -45,6 +48,7 @@ describe('QueryGenerator#dropSchemaQuery', () => {
       ]),
       'mariadb mysql': buildInvalidOptionReceivedError('dropSchemaQuery', dialectName, ['cascade']),
       sqlite3: notSupportedError,
+      oracle: `BEGIN EXECUTE IMMEDIATE 'DROP USER "mySchema" CASCADE' ; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -1918 THEN RAISE; END IF; END;`,
       hana: buildInvalidOptionReceivedError('dropSchemaQuery', dialectName, ['ifExists']),
     });
   });

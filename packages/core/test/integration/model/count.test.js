@@ -59,6 +59,7 @@ describe('Model.count', () => {
       dialectName !== 'mssql' &&
       dialectName !== 'db2' &&
       dialectName !== 'ibmi' &&
+      dialectName !== 'oracle' &&
       dialectName !== 'hana'
     ) {
       describe('aggregate', () => {

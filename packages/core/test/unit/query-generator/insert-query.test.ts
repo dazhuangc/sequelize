@@ -1,9 +1,10 @@
-import { DataTypes, literal } from '@sequelize/core';
+import { DataTypes, ParameterStyle, literal } from '@sequelize/core';
 import { expect } from 'chai';
 import { beforeAll2, expectsql, sequelize } from '../../support';
 
 describe('QueryGenerator#insertQuery', () => {
   const queryGenerator = sequelize.queryGenerator;
+  const dialect = sequelize.dialect;
 
   const hanaReturnIdWrapper = (sql: string, parameters: string, primaryKey: string) => `
     DO (${parameters})
@@ -112,7 +113,25 @@ describe('QueryGenerator#insertQuery', () => {
     });
   });
 
-  it('parses bind parameters in literals even with bindParams: false', () => {
+  it('throws an error if the bindParam option is used', () => {
+    const { User } = vars;
+
+    expect(() => {
+      queryGenerator.insertQuery(
+        User.table,
+        {
+          firstName: 'John',
+          lastName: literal('$1'),
+          username: 'jd',
+        },
+        {},
+        // @ts-expect-error -- intentionally testing deprecated option
+        { bindParam: false },
+      );
+    }).to.throw('The bindParam option has been removed. Use parameterStyle instead.');
+  });
+
+  it('parses bind parameters in literals even with parameterStyle: REPLACEMENT', () => {
     const { User } = vars;
 
     const { query, bind } = queryGenerator.insertQuery(
@@ -124,7 +143,7 @@ describe('QueryGenerator#insertQuery', () => {
       },
       {},
       {
-        bindParam: false,
+        parameterStyle: ParameterStyle.REPLACEMENT,
       },
     );
 
@@ -189,6 +208,7 @@ describe('QueryGenerator#insertQuery', () => {
           'INSERT INTO [Users] ([firstName]) OUTPUT INSERTED.[id], INSERTED.[firstName] VALUES ($sequelize_1);',
         db2: 'SELECT * FROM FINAL TABLE (INSERT INTO "Users" ("firstName") VALUES ($sequelize_1));',
         ibmi: 'SELECT * FROM FINAL TABLE (INSERT INTO "Users" ("firstName") VALUES ($sequelize_1))',
+        oracle: `INSERT INTO "Users" ("firstName") VALUES ($sequelize_1) RETURNING "id", "firstName" INTO :2,:3;`,
         hana: hanaReturnIdWrapper(
           `INSERT INTO "Users" ("firstName") VALUES (:firstName);`,
           'IN firstName NVARCHAR(255) => $sequelize_1',
@@ -198,6 +218,11 @@ describe('QueryGenerator#insertQuery', () => {
     });
 
     it('supports array of strings (column names)', () => {
+      // node-oracledb requires OUTBIND definition, RETURNING '*' isn't valid for oracle.
+      if (dialect.name === 'oracle') {
+        return;
+      }
+
       const { User } = vars;
 
       const { query } = queryGenerator.insertQuery(
@@ -231,6 +256,11 @@ describe('QueryGenerator#insertQuery', () => {
     });
 
     it('supports array of literals', () => {
+      // node-oracledb requires OUTBIND definition, '*' isn't valid for oracle.
+      if (dialect.name === 'oracle') {
+        return;
+      }
+
       const { User } = vars;
 
       expectsql(
@@ -276,6 +306,7 @@ describe('QueryGenerator#insertQuery', () => {
           default: 'INSERT INTO [myTable] ([birthday]) VALUES ($sequelize_1);',
           'db2 ibmi':
             'SELECT * FROM FINAL TABLE (INSERT INTO "myTable" ("birthday") VALUES ($sequelize_1));',
+          oracle: `INSERT INTO "myTable" ("birthday") VALUES ($sequelize_1);`,
           hana: hanaReturnIdWrapper(
             `INSERT INTO "myTable" ("birthday") VALUES (:birthday);`,
             'IN birthday NVARCHAR(5000) => $sequelize_1',
@@ -306,6 +337,9 @@ describe('QueryGenerator#insertQuery', () => {
           },
           mssql: {
             sequelize_1: '2011-03-27 10:01:55.000 +00:00',
+          },
+          oracle: {
+            sequelize_1: new Date('2011-03-27T10:01:55Z'),
           },
           hana: {
             sequelize_1: '2011-03-27 10:01:55.000',
@@ -360,6 +394,10 @@ describe('QueryGenerator#insertQuery', () => {
           snowflake: {
             sequelize_1: true,
             sequelize_2: false,
+          },
+          oracle: {
+            sequelize_1: '1',
+            sequelize_2: '0',
           },
           hana: {
             sequelize_1: true,
