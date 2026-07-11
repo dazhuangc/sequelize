@@ -73,12 +73,13 @@ describe('QueryGenerator#createSchemaQuery', () => {
   it('supports the ifNotExists option', () => {
     expectsql(() => queryGenerator.createSchemaQuery('mySchema', { ifNotExists: true }), {
       default: 'CREATE SCHEMA IF NOT EXISTS [mySchema]',
-      'db2 ibmi mssql oracle hana': buildInvalidOptionReceivedError(
+      'db2 ibmi mssql oracle': buildInvalidOptionReceivedError(
         'createSchemaQuery',
         dialectName,
         ['ifNotExists'],
       ),
       sqlite3: notSupportedError,
+      hana: buildInvalidOptionReceivedError('createSchemaQuery', dialectName, ['ifNotExists']),
     });
   });
 
