@@ -42,6 +42,11 @@ describe('QueryInterface#createTable', () => {
       db2: 'CREATE TABLE IF NOT EXISTS "table" ("value" REAL DEFAULT RAND());',
       ibmi: `BEGIN DECLARE CONTINUE HANDLER FOR SQLSTATE VALUE '42710' BEGIN END; CREATE TABLE "table" ("value" REAL DEFAULT RAND()); END`,
       oracle: `BEGIN EXECUTE IMMEDIATE 'CREATE TABLE "table" ("value" BINARY_FLOAT DEFAULT DBMS_RANDOM.VALUE())'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -955 THEN RAISE; END IF; END;`,
+      hana: hanaIfNotExistsWrapper(
+        'CREATE COLUMN TABLE "table" ("value" REAL DEFAULT RAND());',
+        'table',
+        'SYSTEM',
+      ),
     });
   });
 
