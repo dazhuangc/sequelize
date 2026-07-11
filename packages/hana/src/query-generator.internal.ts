@@ -5,6 +5,7 @@ import type { HanaDialect } from './dialect.js';
 const TECHNICAL_SCHEMA_NAMES = Object.freeze([
   'PUBLIC',
   'SYS',
+  'SYS_DATABASES',
   //   'SYSTEM', // SYSTEM is technical schema on HANA Cloud, but leads to error on HANA express
   'PAL_CONTENT',
   'PAL_ML_TRACK',
