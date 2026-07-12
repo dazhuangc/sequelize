@@ -348,7 +348,7 @@ export class HanaQueryGeneratorTypeScript extends AbstractQueryGenerator {
       'AND SYS.INDEXES.INDEX_NAME = SYS.INDEX_COLUMNS.INDEX_NAME',
       `WHERE SYS.INDEXES.SCHEMA_NAME = ${table.schema ? this.escape(table.schema) : 'CURRENT_SCHEMA'}`,
       `AND SYS.INDEXES.TABLE_NAME = ${this.escape(table.tableName)}`,
-      `ORDER BY SYS.INDEXES.INDEX_NAME, SYS.INDEX_COLUMNS.POSITION`
+      `ORDER BY SYS.INDEXES.INDEX_NAME, SYS.INDEX_COLUMNS.POSITION`,
     ]);
   }
 
