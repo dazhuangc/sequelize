@@ -1007,13 +1007,15 @@ describe(getTestDialectTeaser('Sequelize'), () => {
       });
     }
 
-    if (['postgres', 'sqlite3', 'mssql', 'oracle'].includes(dialectName)) {
+    if (['postgres', 'sqlite3', 'mssql', 'oracle', 'hana'].includes(dialectName)) {
       it('does not improperly escape arrays of strings bound to named parameters', async function () {
         const result = await this.sequelize.query(`select :stringArray as foo${fromQuery()}`, {
           raw: true,
           replacements: { stringArray: sql.list(['"string"']) },
         });
-        const expectedData = dialectName !== 'oracle' ? { foo: '"string"' } : { FOO: '"string"' };
+        const expectedData = ['oracle', 'hana'].includes(dialectName)
+          ? { FOO: '"string"' }
+          : { foo: '"string"' };
         expect(result[0]).to.deep.equal([expectedData]);
       });
     }
